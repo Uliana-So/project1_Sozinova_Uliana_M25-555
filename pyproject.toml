@@ -1,0 +1,12 @@
+[tool.poetry]
+name = "project1-sozinova-uliana-m25-555"
+version = "0.1.0"
+description = ""
+authors = ["Uliana Sozinova <uliana.so-dev@yandex.ru>"]
+readme = "README.md"
+packages = [
+    { include = "labyrinth_game" },
+]
+
+[tool.poetry.scripts]
+project = "labyrinth_game.main:main"
