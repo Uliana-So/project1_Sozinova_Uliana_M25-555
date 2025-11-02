@@ -1,3 +1,6 @@
+**/__pycache__/
+*.py[cod]
+
 .venv/
 dist/
-labyrinth_game/__pycache__/
+.ruff_cache/
