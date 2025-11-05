@@ -1,7 +1,7 @@
 import math
 
 from .constants import (
-    COMMANDS,
+    DANGER_THRESHOLD,
     EVENT_PROBABILITY,
     EVENT_TYPE,
     ROOMS,
@@ -9,60 +9,77 @@ from .constants import (
 
 
 def red_text(text):
+    """Возвращает строку, оформленную красным цветом с помощью ANSI-кодов."""
     return "\033[31m{}\033[0m".format(text)
 
 
 def red_italics_text(text):
+    """Возвращает строку, оформленную красным цветом курсивом с помощью ANSI-кодов."""
     return "\033[3m\033[31m{}\033[0m".format(text)
 
 
 def green_text(text):
+    """Возвращает строку, оформленную зеленым цветом с помощью ANSI-кодов."""
     return "\033[32m{}\033[0m".format(text)
 
 
 def yellow_text(text):
+    """Возвращает строку, оформленную желтым цветом с помощью ANSI-кодов."""
     return "\033[33m{}\033[0m".format(text)
 
 
 def yellow_italics_text(text):
+    """Возвращает строку, оформленную желтым цветом курсивом с помощью ANSI-кодов."""
     return "\033[3m\033[33m{}\033[0m".format(text)
 
 
 def blue_text(text):
+    """Возвращает строку, оформленную синим цветом с помощью ANSI-кодов."""
     return "\033[34m{}\033[0m".format(text)
 
 
 def turquoise_text(text):
+    """Возвращает строку, оформленную бирюзовым цветом с помощью ANSI-кодов."""
     return "\033[36m{}\033[0m".format(text)
 
 
 def bold_text(text):
+    """Возвращает строку, оформленную полужирным стилем с помощью ANSI-кодов."""
     return "\033[1m{}\033[0m".format(text)
 
 
 def italics_text(text):
+    """Возвращает строку, оформленную курсивом с помощью ANSI-кодов."""
     return "\033[3m{}\033[0m".format(text)
 
 
 def underlined_text(text):
+    """Возвращает строку, оформленную с подчёркиванием с помощью ANSI-кодов."""
     return "\033[4m{}\033[0m".format(text)
 
 
 def attempt_open_treasure(game_state: dict) -> None:
+    """
+    Пытается открыть сокровищницу в комнате с сундуком.
+
+    Args:
+        game_state (dict): Текущее состояние игры.
+    """
+
     from .player_actions import get_input
 
-    room = ROOMS.get(game_state['current_room'])
-    puzzle = room.get('puzzle')
-    items_room = room.get('items')
+    room = ROOMS.get(game_state["current_room"])
+    puzzle = room.get("puzzle")
+    items_room = room.get("items")
 
     if "treasure_chest" not in items_room:
         print(italics_text("В комнате нет сундука"))
         return
 
-    if 'treasure_key' in game_state["player_inventory"]:
+    if "treasure_key" in game_state["player_inventory"]:
         print(green_text("Вы применяете ключ, и замок щёлкает. Сундук открыт! " +
                          "В сундуке сокровище! Вы победили!"))
-        ROOMS[game_state['current_room']]['items'].remove("treasure_chest")
+        ROOMS[game_state["current_room"]]["items"].remove("treasure_chest")
         game_state["game_over"] = True
     else:
         answer = get_input("Сундук заперт. ... Ввести код? (да/нет) ")
@@ -71,7 +88,7 @@ def attempt_open_treasure(game_state: dict) -> None:
             if code == puzzle[1]:
                 print(green_text("Замок щёлкнул и раскрылся! Вы открыли сундук и " +
                                  "нашли сокровища! Поздравляем — вы победили!"))
-                ROOMS[game_state['current_room']]['items'].remove("treasure_chest")
+                ROOMS[game_state["current_room"]]["items"].remove("treasure_chest")
                 game_state["game_over"] = True
             else:
                 print(red_text("Замок не поддаётся. Магия защищает сундук..."))
@@ -80,10 +97,17 @@ def attempt_open_treasure(game_state: dict) -> None:
 
 
 def solve_puzzle(game_state: dict) -> None:
+    """
+    Проверяет ответ игрока на загадку в текущей комнате.
+
+    Args:
+        game_state (dict): Текущее состояние игры.
+    """
+
     from .player_actions import get_input
 
-    room = ROOMS.get(game_state['current_room'])
-    puzzle = room.get('puzzle')
+    room = ROOMS.get(game_state["current_room"])
+    puzzle = room.get("puzzle")
     if not puzzle:
         print(italics_text("Загадок здесь нет"))
         return
@@ -106,49 +130,82 @@ def solve_puzzle(game_state: dict) -> None:
         is_correct = user_answer == correct_answer
         
     if is_correct:
-        ROOMS[game_state['current_room']]['puzzle'] = None
+        ROOMS[game_state["current_room"]]["puzzle"] = None
         print(green_text("Правильно!"))
         if "treasure_key" not in game_state["player_inventory"]:
-            game_state["player_inventory"].append('treasure_key')
+            game_state["player_inventory"].append("treasure_key")
             print(italics_text("treasure_key добавлен в инвентарь"))
     else:
         print(red_text("Неверно. Попробуйте снова"))
 
 
 def describe_current_room(game_state: dict) -> None:
-    room = ROOMS.get(game_state['current_room'])
-    description = room.get('description')
-    items_room = room.get('items')
-    exits = room.get('exits')
-    puzzle = room.get('puzzle')
+    """
+    Выводит описание текущей комнаты, доступные выходы и предметы.
 
-    print(yellow_text(f'\n\t== {game_state['current_room'].upper()} =='))
+    Args:
+        game_state (dict): Текущее состояние игры.
+    """
+
+    room = ROOMS.get(game_state["current_room"])
+    description = room.get("description")
+    items_room = room.get("items")
+    exits = room.get("exits")
+    puzzle = room.get("puzzle")
+
+    print(yellow_text(f"\n\t== {game_state["current_room"].upper()} =="))
     if description:
         print(yellow_italics_text(description))
     if items_room:
-        print(underlined_text('Заметные предметы:') + " " + 
-              ', '.join(items_room))
+        print(underlined_text("Заметные предметы:") + " " + 
+              ", ".join(items_room))
     if exits:
-        print(underlined_text('Выходы:') + " " +
+        print(underlined_text("Выходы:") + " " +
               ", ".join(f"{d} -> {r}" for d, r in exits.items()))
     if puzzle:
         print("Кажется, здесь есть загадка (используйте команду solve)")
     print()
 
 
-def show_help() -> None:
+def show_help(commands: dict) -> None:
+    """
+    Выводит список доступных команд и их описания.
+
+    Args:
+        commands (dict): словарь команд и их описаний
+    """
+
     print(bold_text("\nДоступные команды:"))
-    for i, v in COMMANDS.items():
+    for i, v in commands.items():
         print(f"{i:<16} — {v}")
 
 
 def pseudo_random(seed, modulo) -> int:
+    """
+    Генерирует псевдослучайное число на основе математической формулы с синусом.
+    Используется для предсказуемых случайных событий.
+
+    Args:
+        seed (int): Числовое значение.
+        modulo (int): Делитель для ограничения результата диапазоном [0, modulo).
+
+    Returns:
+        int: Целое число, полученное из дробной части вычислений и ограниченное modulo.
+    """
+
     x = math.sin(seed * 12.9898) * 43758.5453
     fractional = x - math.floor(x)
     return int(fractional * modulo)
 
 
 def trigger_trap(game_state: dict) -> None:
+    """
+    Активирует ловушку и применяет негативные последствия для игрока.
+
+    Args:
+        game_state (dict): Текущее состояние игры.
+    """
+
     print(italics_text("Ловушка активирована! Пол стал дрожать..."))
 
     inventory = game_state.get("player_inventory")
@@ -162,7 +219,7 @@ def trigger_trap(game_state: dict) -> None:
 
     danger_value = pseudo_random(seed, EVENT_PROBABILITY)
 
-    if danger_value < 3:
+    if danger_value < DANGER_THRESHOLD:
         print(red_text("Ловушка была смертельной! Игра окончена..."))
         game_state["game_over"] = True
     else:
@@ -170,6 +227,13 @@ def trigger_trap(game_state: dict) -> None:
 
 
 def random_event(game_state):
+    """
+    С небольшой вероятностью вызывает одно из случайных событий при движении игрока.
+
+    Args:
+        game_state (dict): Текущее состояние игры.
+    """
+
     seed = game_state.get("steps_taken")
     current_room = game_state.get("current_room")
     inventory = game_state.get("inventory")

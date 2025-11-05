@@ -8,6 +8,14 @@ from .utils import (
 
 
 def use_item(game_state: dict, item_name: str) -> None:
+    """
+    Использование игроком предмета
+
+    Args:
+        game_state (dict): Текущее состояние игры.
+        item_name (str): Название предмета.
+    """
+
     if item_name not in game_state["player_inventory"]:
         print(italics_text("Нет такого предмета"))
         return
@@ -38,22 +46,38 @@ def use_item(game_state: dict, item_name: str) -> None:
 
 
 def take_item(game_state: dict, item_name: str) -> None:
-    room = ROOMS.get(game_state['current_room'])
-    items_room = room.get('items')
+    """
+    Позволяет игроку поднять предмет в текущей комнате.
+
+    Args:
+        game_state (dict): Текущее состояние игры.
+        item_name (str): Название предмета.
+    """
+
+    room = ROOMS.get(game_state["current_room"])
+    items_room = room.get("items")
     if item_name in items_room:
         if item_name == "treasure_chest":
             print(italics_text("Вы не можете поднять сундук, он слишком тяжелый"))
         else:
-            game_state['player_inventory'].append(item_name)
-            ROOMS[game_state['current_room']]['items'].remove(item_name)
+            game_state["player_inventory"].append(item_name)
+            ROOMS[game_state["current_room"]]["items"].remove(item_name)
             print(italics_text(f"Вы подняли: {item_name}"))
     else:
         print(italics_text("Такого предмета здесь нет"))
 
 
 def move_player(game_state: dict, direction: str) -> None:
-    room = ROOMS.get(game_state['current_room'])
-    exits = room.get('exits')
+    """
+    Перемещает игрока в указанном направлении, если это возможно.
+
+    Args:
+        game_state (dict): Текущее состояние игры.
+        direction (str): Направление движения.
+    """
+
+    room = ROOMS.get(game_state["current_room"])
+    exits = room.get("exits")
     if direction in exits:
         if exits[direction] == "treasure_room" and \
                 "rusty_key" not in game_state["player_inventory"]:
@@ -66,7 +90,7 @@ def move_player(game_state: dict, direction: str) -> None:
                   "чтобы открыть путь в комнату сокровищ"))
 
         game_state["current_room"] = exits[direction]
-        game_state['steps_taken'] += 1
+        game_state["steps_taken"] += 1
         describe_current_room(game_state)
         random_event(game_state)
     else:
@@ -74,13 +98,30 @@ def move_player(game_state: dict, direction: str) -> None:
 
 
 def show_inventory(game_state) -> None:
-    if game_state.get('player_inventory'):
-        print(italics_text("Инвентарь: " + ", ".join(game_state['player_inventory'])))
+    """
+    Показывает инвентарь игрока, если он есть.
+
+    Args:
+        game_state (dict): Текущее состояние игры.
+    """
+
+    if game_state.get("player_inventory"):
+        print(italics_text("Инвентарь: " + ", ".join(game_state["player_inventory"])))
     else:
         print(italics_text("Инвентарь пуст"))
 
 
 def get_input(prompt:str = "> ") -> str:
+    """
+    Безопасный ввод команды от пользователя.
+
+    Args:
+        prompt (str): текст приглашения для ввода (по умолчанию "> ").
+
+    Returns:
+        str: введённая строка или "quit" в случае прерывания.
+    """
+
     try:
         return input(prompt)
     except (KeyboardInterrupt, EOFError):

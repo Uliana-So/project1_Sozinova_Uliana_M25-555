@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from .constants import COMMANDS
 from .player_actions import (
     get_input,
     move_player,
@@ -19,6 +20,14 @@ from .utils import (
 
 
 def process_command(game_state: dict, command: str) -> None:
+    """
+    Обрабатывает пользовательскую команду и выполняет соответствующее действие.
+
+    Args:
+        game_state (dict): Текущее состояние игры.
+        command (str): Строка, введенная пользователем.
+    """
+
     if not command:
         print(italics_text("Введите команду (help - список команд)"))
         return
@@ -52,28 +61,42 @@ def process_command(game_state: dict, command: str) -> None:
             else:
                 solve_puzzle(game_state)
         case "help":
-            show_help()
+            show_help(COMMANDS)
         case "quit" | "exit":
             print(italics_text("Выход из игры."))
-            game_state['game_over'] = True
+            game_state["game_over"] = True
         case _:
             print(red_italics_text("Неизвестная команда. Введите help."))
 
 
 def main():
+    """
+    Основной игровой цикл.
+
+    Функция инициализирует состояние игры, приветствует игрока и отображает
+    первую комнату. Затем запускается бесконечный цикл обработки команд,
+    который продолжается, пока игра не будет завершена.
+
+    Структура game_state включает:
+        - "player_inventory" (list[str]): инвентарь игрока
+        - "current_room" (str): комната, в которой находится игрок
+        - "game_over" (bool): флаг завершения игры
+        - "steps_taken" (int): количество совершённых действий/передвижений
+    """
+
     game_state = {
-        'player_inventory': [],
-        'current_room': 'entrance',
-        'game_over': False,
-        'steps_taken': 0
+        "player_inventory": [],
+        "current_room": "entrance",
+        "game_over": False,
+        "steps_taken": 0
     }
     
     print(red_text("Добро пожаловать в Лабиринт сокровищ!"))
     describe_current_room(game_state)
-    while not game_state['game_over']:
+    while not game_state["game_over"]:
         command = get_input()
         process_command(game_state, command)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
