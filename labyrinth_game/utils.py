@@ -88,9 +88,24 @@ def solve_puzzle(game_state: dict) -> None:
         print(italics_text("Загадок здесь нет"))
         return
 
+    # альтернативные ответы для некоторых загадок
+    alt_answers = {
+        "10": ["10", "десять", "ten"],
+    }
+
     print(turquoise_text(puzzle[0]))
-    answer = get_input("Ваш ответ: ")
-    if answer == puzzle[1]:
+    user_answer = get_input("Ваш ответ: ").lower().strip()
+    correct_answer = puzzle[1]
+
+    if correct_answer in alt_answers:
+        if user_answer in alt_answers[correct_answer]:
+            is_correct = True
+        else:
+            is_correct = False
+    else:
+        is_correct = user_answer == correct_answer
+        
+    if is_correct:
         ROOMS[game_state['current_room']]['puzzle'] = None
         print(green_text("Правильно!"))
         if "treasure_key" not in game_state["player_inventory"]:
