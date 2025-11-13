@@ -73,4 +73,4 @@ make clean
 
 ## 🎥 Демонстрация игры (Asciinema)
 
-[![demo](https://asciinema.org/a/6SpKH12A1Krg41SdbzYwqmcSp.svg)](https://asciinema.org/a/6SpKH12A1Krg41SdbzYwqmcSp)
+![demo](assets/demo_project.gif)
